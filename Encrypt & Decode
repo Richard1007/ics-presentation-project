@@ -1,0 +1,80 @@
+def encrypt(message,shared_secret):
+    ASCII = []
+    block_size = 3
+    encrypt_message=''
+    #get the sum of each digit of shared secret
+    sum_digit = 0
+    for i in str(shared_secret):
+        sum_digit += int(i)
+        
+    # get the number of blocks
+    if len(message) % block_size==0:
+        block_number = len(message)//block_size
+    else:
+        block_number = len(message)//block_size +1
+
+    # set dict for 3 different keys(向左平移)
+    sc=str(shared_secret)
+    dic={}
+    dic[0]=shared_secret
+    dic[1]= int(sc[1:3]+sc[0])
+    dic[2]=int(sc[2]+sc[0:2])
+
+    for m in range(block_number):
+        remainder = m % 3
+        shared_secret = dic[remainder]
+        
+        for n in range(block_size*m,block_size*(m+1)):
+            try:
+                asc = ord(message[n])
+                asc += int(str(shared_secret)[ n % 3])
+                asc -= sum_digit
+                ASCII.append(asc)
+        
+            except IndexError:
+                break
+    for item in ASCII:
+        encrypt_message += chr(item)
+    return encrypt_message
+       
+print(encrypt('i love you', 193))
+
+
+
+
+
+
+def decode(encrypt_message,shared_secret):
+    decode_message = ''
+    decode_ASCII =[]
+    
+    #convert encrypt_message into ASCII list
+    encrypt_ASCII =[]
+    for item in encrypt_message:
+        encrypt_ASCII.append(ord(item))
+        
+    sum_digit = 0
+    for i in str(shared_secret):
+        sum_digit += int(i)
+    
+    # set dict
+    sc=str(shared_secret)
+    dic={}
+    dic[0]=shared_secret
+    dic[1]= int(sc[1:3]+sc[0])
+    dic[2]=int(sc[2]+sc[0:2])
+    
+    for m in range(len(encrypt_ASCII)):
+        remainder = (m//3) % 3
+        shared_secret = dic[remainder]
+        encrypt_ASCII[m] += sum_digit
+        encrypt_ASCII[m] -= int(str(shared_secret)[m % 3])
+        
+        decode_ASCII.append(encrypt_ASCII[m])
+        
+    for item in decode_ASCII:
+        decode_message += chr(item)
+    return decode_message
+            
+
+print(decode(']bklYmki',193))
